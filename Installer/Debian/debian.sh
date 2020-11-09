@@ -1,7 +1,23 @@
 #!/data/data/com.termux/files/usr/bin/bash
-pkg install wget -y 
-folder=debian-fs
-if [ -d "$folder" ]; then
+pkg install wget -y
+
+# installation Folder lock
+
+if [[ -z "$ANDRONIX_IHOME" ]]; then
+folder="${HOME}/debian-fs"
+else
+    case ${ANDRONIX_IHOME} in
+    /data/data/com.termux/*)
+    folder=${ANDRONIX_IHOME} ;;
+    *)
+    echo
+    echo "Location set to invalid or unaccesable destiantion ${ANDRONIX_IHOME}" 
+    echo
+    folder=${HOME}/debian-fs ;;
+    esac
+fi
+
+if [ -d "$folder/bin/sh" ]; then
 	first=1
 	echo "skipping downloading"
 fi
@@ -44,6 +60,7 @@ cd \$(dirname \$0)
 unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
+command+=" --kill-on-exit"
 command+=" -0"
 command+=" -r $folder"
 if [ -n "\$(ls -A debian-binds)" ]; then
